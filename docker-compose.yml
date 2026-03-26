@@ -1,12 +1,13 @@
 services:
   securityquotes-api:
     build: .
-    container_name: securityquotes-api
-    restart: unless-stopped
+    container_name: securityquotes-api-remaster
     ports:
       - "3000:3000"
     env_file:
       - .env
     volumes:
       - ./data:/app/data
+      - ./uploads:/app/uploads
       - ./generated:/app/generated
+    restart: unless-stopped

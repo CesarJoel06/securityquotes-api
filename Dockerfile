@@ -1,14 +1,14 @@
-FROM node:22-alpine
+FROM node:20-bookworm-slim
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm install
 
 COPY . .
 
-RUN mkdir -p /app/data /app/generated
+RUN mkdir -p data uploads generated
 
 EXPOSE 3000
 
-CMD ["node", "src/server.js"]
+CMD ["npm", "start"]

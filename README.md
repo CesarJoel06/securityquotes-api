@@ -1,64 +1,57 @@
-# securityquotes-api
+# SecurityQuotes API Remaster
 
-Backend de ejemplo con:
-
+Backend con:
 - Express
 - SQLite
 - JWT
-- bcrypt
-- PDFKit
-- Docker
+- bcryptjs
+- multer para imágenes
+- PDFKit para recibos y cotizaciones
 
-## 1) Preparación
+## Variables de entorno
 
-```bash
-cp .env.example .env
+Crea un archivo `.env`:
+
+```env
+PORT=3000
+JWT_SECRET=cambia_esto_por_un_secreto_largo
+PUBLIC_BASE_URL=http://62.169.22.80:3000
 ```
 
-Edita `.env` y cambia:
-
-- `JWT_SECRET`
-- `PUBLIC_BASE_URL`
-
-## 2) Ejecutar con Docker
+## Ejecutar con Docker
 
 ```bash
 docker compose up -d --build
 ```
 
-## 3) Probar salud
+## Probar salud
 
 ```bash
-curl http://TU_IP_O_DOMINIO:3000/api/health
+curl http://62.169.22.80:3000/api/health
 ```
 
-## 4) Endpoints
+## Endpoints
 
-### Registro
+### Registro con imagen
 `POST /api/auth/register`
 
-```json
-{
-  "name": "César Chumpitas Palomino",
-  "email": "cesar@example.com",
-  "password": "123456",
-  "confirmPassword": "123456",
-  "specialty": "Seguridad electrónica",
-  "extraField": "Instalaciones CCTV"
-}
-```
+Form-data:
+- username
+- email
+- password
+- image (opcional)
 
 ### Login
 `POST /api/auth/login`
 
 ```json
 {
-  "email": "cesar@example.com",
+  "email": "correo@ejemplo.com",
   "password": "123456"
 }
 ```
 
-### Crear cotización / venta
+### Generar documento PDF
 `POST /api/documents`
 
 Header:
@@ -67,27 +60,9 @@ Header:
 ```json
 {
   "clientName": "Cliente Demo",
-  "documentType": "COTIZACION",
-  "projectType": "Instalación CCTV",
-  "notes": "Incluye configuración y puesta en marcha",
-  "items": [
-    {
-      "category": "Servicio",
-      "description": "Instalación de 4 cámaras",
-      "quantity": 1,
-      "unitPrice": 350.0
-    },
-    {
-      "category": "Material",
-      "description": "Cable UTP",
-      "quantity": 2,
-      "unitPrice": 45.0
-    }
-  ]
+  "documentType": "Cotización",
+  "services": ["Instalación de cámaras", "Configuración de DVR"],
+  "materials": ["Cable UTP", "Conectores"],
+  "total": 350
 }
 ```
-
-## 5) Persistencia
-
-- SQLite queda en `./data`
-- PDFs quedan en `./generated`
