@@ -1,0 +1,98 @@
+{
+  "info": {
+    "name": "SecurityQuotes API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección lista para probar el backend de SecurityQuotes desde Postman"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://TU_IP_O_DOMINIO:3000" },
+    { "key": "token", "value": "" },
+    { "key": "adminApiKey", "value": "" },
+    { "key": "userId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/api/health", "host": ["{{baseUrl}}"], "path": ["api", "health"] }
+      }
+    },
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "username", "value": "Cesar", "type": "text" },
+            { "key": "email", "value": "cesar@example.com", "type": "text" },
+            { "key": "password", "value": "123456", "type": "text" }
+          ]
+        },
+        "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"cesar@example.com\",\n  \"password\": \"123456\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+      }
+    },
+    {
+      "name": "Create Document",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"clientName\": \"Cliente Demo\",\n  \"documentType\": \"Cotización\",\n  \"services\": [\"Instalación de cámaras\", \"Configuración de DVR\"],\n  \"materials\": [\"Cable UTP\", \"Conectores\"],\n  \"total\": 350\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/documents", "host": ["{{baseUrl}}"], "path": ["api", "documents"] }
+      }
+    },
+    {
+      "name": "My Documents",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/documents", "host": ["{{baseUrl}}"], "path": ["api", "documents"] }
+      }
+    },
+    {
+      "name": "Admin - Users",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-api-key", "value": "{{adminApiKey}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/admin/users?limit=200", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users"], "query": [{"key":"limit","value":"200"}] }
+      }
+    },
+    {
+      "name": "Admin - User Documents",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "x-api-key", "value": "{{adminApiKey}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/api/admin/users/{{userId}}/documents", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users", "{{userId}}", "documents"] }
+      }
+    }
+  ]
+}
