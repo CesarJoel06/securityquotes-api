@@ -1,12 +1,8 @@
 const jwt = require('jsonwebtoken');
 
-function extractBearer(req) {
-  const authHeader = req.headers.authorization || '';
-  return authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-}
-
 function authRequired(req, res, next) {
-  const token = extractBearer(req);
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
   if (!token) {
     return res.status(401).json({ message: 'Token requerido' });
@@ -21,25 +17,24 @@ function authRequired(req, res, next) {
   }
 }
 
-function adminKeyRequired(req, res, next) {
-  const configuredKey = process.env.ADMIN_API_KEY;
-  if (!configuredKey) {
-    return res.status(503).json({
-      message: 'ADMIN_API_KEY no configurada en el servidor'
-    });
+function adminRequired(req, res, next) {
+  const authHeader = req.headers.authorization || '';
+  const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  const apiKey = req.headers['x-api-key'] || bearerToken;
+
+  if (!process.env.ADMIN_API_KEY) {
+    return res.status(500).json({ message: 'ADMIN_API_KEY no está configurada en el servidor' });
   }
 
-  const bearer = extractBearer(req);
-  const headerKey = req.headers['x-api-key'];
-  const providedKey = typeof headerKey === 'string' && headerKey.trim()
-    ? headerKey.trim()
-    : bearer;
+  if (!apiKey) {
+    return res.status(401).json({ message: 'Clave administrativa requerida' });
+  }
 
-  if (!providedKey || providedKey !== configuredKey) {
-    return res.status(401).json({ message: 'Clave de administrador inválida' });
+  if (apiKey !== process.env.ADMIN_API_KEY) {
+    return res.status(403).json({ message: 'Clave administrativa inválida' });
   }
 
   next();
 }
 
-module.exports = { authRequired, adminKeyRequired, extractBearer };
+module.exports = { authRequired, adminRequired };

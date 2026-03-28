@@ -1,14 +1,16 @@
 {
   "info": {
-    "name": "SecurityQuotes API",
+    "name": "SecurityQuotes API - VPS 62.169.22.80",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Colección lista para probar el backend de SecurityQuotes desde Postman"
+    "description": "Colección para probar login, generación de PDF, endpoints administrativos y consultas de usuarios/documentos."
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://TU_IP_O_DOMINIO:3000" },
+    { "key": "base_url", "value": "http://62.169.22.80:3000" },
+    { "key": "admin_api_key", "value": "kjkszpj" },
+    { "key": "email", "value": "correo@ejemplo.com" },
+    { "key": "password", "value": "123456" },
     { "key": "token", "value": "" },
-    { "key": "adminApiKey", "value": "" },
-    { "key": "userId", "value": "1" }
+    { "key": "user_id", "value": "1" }
   ],
   "item": [
     {
@@ -16,23 +18,7 @@
       "request": {
         "method": "GET",
         "header": [],
-        "url": { "raw": "{{baseUrl}}/api/health", "host": ["{{baseUrl}}"], "path": ["api", "health"] }
-      }
-    },
-    {
-      "name": "Register",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "formdata",
-          "formdata": [
-            { "key": "username", "value": "Cesar", "type": "text" },
-            { "key": "email", "value": "cesar@example.com", "type": "text" },
-            { "key": "password", "value": "123456", "type": "text" }
-          ]
-        },
-        "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+        "url": "{{base_url}}/api/health"
       }
     },
     {
@@ -44,13 +30,13 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"cesar@example.com\",\n  \"password\": \"123456\"\n}"
+          "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
         },
-        "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }
+        "url": "{{base_url}}/api/auth/login"
       }
     },
     {
-      "name": "Create Document",
+      "name": "Generar PDF autenticado",
       "request": {
         "method": "POST",
         "header": [
@@ -59,39 +45,54 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"clientName\": \"Cliente Demo\",\n  \"documentType\": \"Cotización\",\n  \"services\": [\"Instalación de cámaras\", \"Configuración de DVR\"],\n  \"materials\": [\"Cable UTP\", \"Conectores\"],\n  \"total\": 350\n}"
+          "raw": "{\n  \"clientName\": \"Cliente autenticado\",\n  \"documentType\": \"Cotización\",\n  \"services\": [\"Instalación de cámaras\", \"Configuración de DVR\"],\n  \"materials\": [\"Cable UTP\", \"Conectores\", \"Fuente\"],\n  \"total\": 350\n}"
         },
-        "url": { "raw": "{{baseUrl}}/api/documents", "host": ["{{baseUrl}}"], "path": ["api", "documents"] }
+        "url": "{{base_url}}/api/documents"
       }
     },
     {
-      "name": "My Documents",
+      "name": "Listar mis documentos",
       "request": {
         "method": "GET",
         "header": [
           { "key": "Authorization", "value": "Bearer {{token}}" }
         ],
-        "url": { "raw": "{{baseUrl}}/api/documents", "host": ["{{baseUrl}}"], "path": ["api", "documents"] }
+        "url": "{{base_url}}/api/documents"
       }
     },
     {
-      "name": "Admin - Users",
+      "name": "Admin - listar usuarios",
       "request": {
         "method": "GET",
         "header": [
-          { "key": "x-api-key", "value": "{{adminApiKey}}" }
+          { "key": "x-api-key", "value": "{{admin_api_key}}" }
         ],
-        "url": { "raw": "{{baseUrl}}/api/admin/users?limit=200", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users"], "query": [{"key":"limit","value":"200"}] }
+        "url": "{{base_url}}/api/admin/users"
       }
     },
     {
-      "name": "Admin - User Documents",
+      "name": "Admin - documentos de usuario",
       "request": {
         "method": "GET",
         "header": [
-          { "key": "x-api-key", "value": "{{adminApiKey}}" }
+          { "key": "x-api-key", "value": "{{admin_api_key}}" }
         ],
-        "url": { "raw": "{{baseUrl}}/api/admin/users/{{userId}}/documents", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users", "{{userId}}", "documents"] }
+        "url": "{{base_url}}/api/admin/users/{{user_id}}/documents"
+      }
+    },
+    {
+      "name": "Admin - generar PDF por userId",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "x-api-key", "value": "{{admin_api_key}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": {{user_id}},\n  \"clientName\": \"Cliente generado desde Postman\",\n  \"documentType\": \"Venta\",\n  \"services\": \"Servicio técnico\\nCambio de conectores\\nPruebas\",\n  \"materials\": \"Balún\\nConector DC\\nFuente\",\n  \"total\": \"80.00\"\n}"
+        },
+        "url": "{{base_url}}/api/admin/documents"
       }
     }
   ]
